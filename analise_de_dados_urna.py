@@ -1,5 +1,8 @@
 # 03/01/2023 - Lucas Garzuze Cordeiro
+
 import re
+import pandas as pd
+
 # Extrai os dados do Registro Digital de Urna (RDV) da sessão em que voto, para
 # fazer análises. zona: 003, seção 0683
 
@@ -36,3 +39,23 @@ for line in contents:
 
 for vote in votes:
     print(vote)
+
+# Processamento
+
+votes_table = pd.DataFrame(votes)
+print(votes_table)
+votes_table.to_csv("rdv.csv", header=True, index=False)
+
+# Agregação
+
+# Criando uma tabela agregada que faz uma soma dos votos de cada candidato
+votes_table_agg = votes_table.groupby('voto').agg('sum').reset_index()
+
+# Organizando os votos por ordem decrescente
+votes_table_agg = votes_table_agg.sort_values(by='quantidade', ascending=False)
+
+# Criando uma coluna com o percentua0l de cada candidato
+votes_table_agg['percentual'] = round(100*(votes_table_agg['quantidade'] /
+                                        votes_table_agg['quantidade'].sum()), 2)
+
+print(votes_table_agg)
