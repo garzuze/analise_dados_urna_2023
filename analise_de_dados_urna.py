@@ -2,6 +2,8 @@
 
 import re
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Extrai os dados do Registro Digital de Urna (RDV) da sessão em que voto, para
 # fazer análises. zona: 003, seção 0683
@@ -24,6 +26,7 @@ with open(file='rdv.txt', mode='r') as fp:
 
 # Extração dos dados
 
+# Criando pattern no regex para filtrar os votos para cada candidato
 pattern = re.compile(pattern="\[(.*?)\]")
 
 votes = []
@@ -42,6 +45,7 @@ for vote in votes:
 
 # Processamento
 
+# Criando DataFrame com o Pandas
 votes_table = pd.DataFrame(votes)
 print(votes_table)
 votes_table.to_csv("rdv.csv", header=True, index=False)
@@ -59,3 +63,35 @@ votes_table_agg['percentual'] = round(100*(votes_table_agg['quantidade'] /
                                         votes_table_agg['quantidade'].sum()), 2)
 
 print(votes_table_agg)
+
+# Visualização
+
+# Visualização dos dados absolutos
+URNA = "Curitiba/PR - zona: 003 - seção 0683"
+
+x_column = 'voto'
+y_column = 'quantidade'
+
+title = f"Votação para presidente - Segundo turno 2022 - {URNA}"
+x_label = 'Voto'
+y_label = 'Quantidade'
+
+with sns.axes_style('whitegrid'):
+    chart = sns.barplot(data=votes_table_agg, x=x_column, y=y_column)
+    chart.set(title=title, xlabel=x_label, ylabel=y_label)
+
+plt.show()
+
+# Visualização de dados relativos
+# x_column = 'voto'
+# y_column = 'percentual'
+
+# title = f"Votação para presidente - Segundo turno 2022 - {URNA}"
+# x_label = 'Voto'
+# y_label = 'Quantidade (%)'
+
+# with sns.axes_style('whitegrid'):
+#     chart = sns.barplot(data=votes_table_agg, x=x_column, y=y_column)
+#     chart.set(title=title, xlabel=x_label, ylabel=y_label)
+
+# plt.show()
